@@ -1,3 +1,7 @@
+# Forecast age-specific-fertility-rates (ASFR) with linear mixed-effects model.
+# Fixed effects: ldi, edu; random effects: location.
+# LDI is defined as lag distributed income per capita: gross domestic product 
+# per capita that has been smoothed over the preceding 10 years.
 library(lme4)
 library(plyr)
 
