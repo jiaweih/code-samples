@@ -28,10 +28,10 @@ regression <- function(formula) {
 	lm_lst <- list()
 
 	for (age_group_id in 8:14) {
-    
-    train.data <- data.past[(data.past$age_group_id == age_group_id) & 
-    						(data.past$year_id < hold.out.year),]
-    lm_lst[[length(lm_lst) + 1]] <- formula(train.data)
+	  
+	  train.data <- data.past[(data.past$age_group_id == age_group_id) & 
+	  						(data.past$year_id < hold.out.year),]
+	  lm_lst[[length(lm_lst) + 1]] <- formula(train.data)
 	    
 	}
 	return(lm_lst)
@@ -46,7 +46,7 @@ ldi.edu.country.formula <- function(data) {
 	#
 	# Returns:
 	# 	Formula of linear random intercept model.
-  formula <- lmer('log(asfr) ~ 1 + ldi + edu + (1 | location_id)', data=data)
+	formula <- lmer('log(asfr) ~ 1 + ldi + edu + (1 | location_id)', data=data)
 }
 
 
