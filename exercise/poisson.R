@@ -5,24 +5,24 @@
 library(ggplot2)
 
 dpoi <- function(lambda, k) {
-    # The probability mass function of the Poisson distribution
-    p <- lambda ** k * exp(-lambda) / factorial(k)
-    return(p)
+  # The probability mass function of the Poisson distribution
+  p <- lambda ** k * exp(-lambda) / factorial(k)
+  return(p)
 }
 
 
 dpoi.to.dataframe <- function(lambda) {
-    # Calculate Poisson probablity of a given lambda 
-    # against multiple k and save it to a data frame.
-    p <- vector(length = 20)
+  # Calculate Poisson probablity of a given lambda 
+  # against multiple k and save it to a data frame.
+  p <- vector(length = 20)
 
-    # Calculate the probability of X=k given lambda=1, for k=1:20. 
-    for (i in 1:20) {
-        p[i] <- dpoi(lambda, i)
-    }
-    # Deposit the vector p into a data frame
-    p.data.frame <- data.frame(p=p, k=1:20, lambda=lambda)
-    return(p.data.frame)
+  # Calculate the probability of X=k given lambda=1, for k=1:20. 
+  for (i in 1:20) {
+    p[i] <- dpoi(lambda, i)
+  }
+  # Deposit the vector p into a data frame
+  p.data.frame <- data.frame(p=p, k=1:20, lambda=lambda)
+  return(p.data.frame)
 }
 
 # Make three data frames for lambda=1, 4, 10.
