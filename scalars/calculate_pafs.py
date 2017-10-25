@@ -1,21 +1,5 @@
 '''
 This script aims to calculate risk-acause specific PAFs
-Inputs:
-0. Command line arguments: a single set of (acause, DATE, sex_id)
-1. forecasting database: get the relationship between cause and risk
-2. SEV: '/ihme/forecasting/data/sev/{risk}/{sex_id}/best'
-3. rrmax: "{rrmax_dir}/{rrmax_file}" where
-    rrmax_dir = '/ihme/forecasting/data/gbd2013_riskfactors_updated/rrmax/'
-    rrmax_file = '{risk}_{sex_id}.hdf'
-    OR
-    rrmax_dir = '/ihme/forecasting/data/rr_max'
-4. complete index:
-    '/ihme/forecasting/ref/jiawei/complete_index.csv'
-
-Outputs:
-PAF:
-    outpath_paf = '/ihme/forecasting/data/cluster_sev/{DATE}/paf/'\
-    '{acause}_{risk}_{sex_id}.hdf'
 '''
 import logging
 import os

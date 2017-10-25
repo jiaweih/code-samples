@@ -1,32 +1,5 @@
 """
 This script calculates aggregated acause specific PAFs and scalars
-Inputs:
-0. acause, sex_id, DATE
-1. forecasting database: get risks for acause; get risk-acause pairs that
-    are supposed to have PAF of 1
-
-2. GBD database: get risk-acause specific PAF
-
-3. Complete index:
-    '/ihme/forecasting/ref/jiawei/complete_index.csv'
-
-4. forecasted risk-outcome specific PAF:
-    '/ihme/forecasting/data/cluster_sev/{DATE}/paf/{acause}_{risk}_{sex_id}.hdf'
-
-5. mediation factors:
-    '/ihme/forecasting/ref/jiawei/mediation.csv'
-
-Outputs:
-1. adjusted risk-acause specific PAF
-'/ihme/forecasting/data/paf/{DATE}/risk_acause_specific/'\
-'{acause}_{risk}_{sex_id}.hdf'
-
-2. risk-acause specific scalar
-'/ihme/forecasting/data/paf/{DATE}/acause_specific/{acause}_{sex_id}.hdf'
-
-3. acause specific scalars:
-'/ihme/forecasting/data/scalars/{DATE}/results/{acause}/'\
-'{acause}_{sex_id}_draws.hdf'
 """
 import argparse
 from collections import defaultdict
