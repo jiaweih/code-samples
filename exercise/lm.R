@@ -37,14 +37,14 @@ plot_lm <- function(lm, name) {
 
   # Save the graphs
   dir.create("graphs", showWarnings = FALSE)
-  pdfs <- list(pdf(paste0("graphs/", name, "_residuals_hist.pdf")),
-               pdf(paste0("graphs/", name, "_lag.pdf")),
-               pdf(paste0("graphs/", name, ".pdf")))
-  ps <- list(p1, p2, p3)
+  pdfs <- list(item1=pdf(paste0("graphs/", name, ".pdf")),
+               item2=pdf(paste0("graphs/", name, "_residuals_hist.pdf")),
+               item3=pdf(paste0("graphs/", name, "_lag.pdf")))
+  ps <- list(item1=p1, item2=p2, item3=p3)
   
-  for (i in 1:3) {
+  for (i in names(ps)) {
     pdfs[[i]]
-    print(ps[i])
+    print(ps[[i]])
     dev.off()
   }
 }
