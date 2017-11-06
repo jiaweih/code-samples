@@ -1,0 +1,2 @@
+Hi ${PERSON_NAME},
+This email is to remind you that you need to visit Dr. Wang in 5 minutes.
