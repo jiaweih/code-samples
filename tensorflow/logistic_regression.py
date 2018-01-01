@@ -41,19 +41,25 @@ n_epoch = 50
 batch_size = 100
 n_batch = 80
 init = tf.global_variables_initializer()
+saver = tf.train.Saver()
+
 with tf.Session() as sess:
     sess.run(init)
+
     for epoch in range(n_epoch):
         for batch in range(n_batch):
             X_batch, y_batch = random_batch(X_train, y_train, batch_size)
-            _, l = sess.run([optimizer, loss], feed_dict={X: X_batch, y: y_batch})
-            if epoch % 10 == 0:
-                print("Loss: ", l)
+            _, l = sess.run([optimizer, loss],
+                            feed_dict={X: X_batch, y: y_batch})
+            if batch == n_batch-1:
+                print("Epoch ", epoch, "Loss: ", l)
+                save_path = saver.save(sess, "/tmp/logistic_model.ckpt")
     best_W = W.eval()
     best_b = b.eval()
     # Prediction for test data.
     y_pred_test = y_pred.eval(feed_dict={X: X_test,
                                          y: y_test.reshape((-1, 1))})
+    save_path = saver.save(sess, "/tmp/logistic_model_final.ckpt")
 
 # Predict 1 if predicted probability is greater than 0.5.
 y_pred_test = (y_pred_test >= 0.5)
