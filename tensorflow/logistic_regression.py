@@ -1,3 +1,4 @@
+import os
 import numpy as np
 from sklearn import datasets
 from datetime import datetime
@@ -27,8 +28,7 @@ with tf.name_scope("model"):
     W = tf.Variable(tf.random_normal([2, 1]), name='W')
     b = tf.Variable(tf.zeros([1]), name='b')
     # Function for logistic regression.
-    # y_pred = tf.div(1., 1. + tf.exp(-tf.matmul(X, W)+b))
-    logits = tf.matmul(X, W) + b
+    logits = tf.add(tf.matmul(X, W), b)
     y_pred = tf.sigmoid(logits)
 
 # Create a log directory that TensorBoard will read from.
@@ -60,28 +60,43 @@ with tf.name_scope("save"):
     # Create a Saver node.
     saver = tf.train.Saver()
 
-with tf.Session() as sess:
-    sess.run(init)
+checkpoint_path = "/tmp/logistic_model.ckpt"
+checkpoint_epoch_path = checkpoint_path + ".epoch"
+final_model_path = "/tmp/logistic_model_final.ckpt"
 
-    for epoch in range(n_epoch):
+with tf.Session() as sess:
+    if os.path.isfile(checkpoint_epoch_path):
+        # if the checkpoint file exists, restore the model
+        # and load the epoch number
+        with open(checkpoint_epoch_path, "rb") as f:
+            start_epoch = int(f.read())
+        print("Training was interrupted. Continuing at epoch", start_epoch)
+        saver.restore(sess, checkpoint_path)
+    else:
+        start_epoch = 0
+        sess.run(init)
+
+    for epoch in range(start_epoch, n_epoch):
         for batch in range(n_batch):
             X_batch, y_batch = random_batch(X_train, y_train, batch_size)
             _, loss_eval, summary_str = sess.run(
                                             [optimizer, loss, loss_summary],
                                             feed_dict={X: X_batch, y: y_batch})
-            if batch == n_batch-1:
-                print("Epoch ", epoch, "\tLoss: ", loss_eval)
-                # Save the model.
-                save_path = saver.save(sess, "/tmp/logistic_model.ckpt")
-                file_writer.add_summary(summary_str, epoch)
+        print("Epoch ", epoch, "\tLoss: ", loss_eval)
+        file_writer.add_summary(summary_str, epoch)
 
+        if epoch % 10 == 0:
+            # Save the model.
+            saver.save(sess, checkpoint_path)
+            with open(checkpoint_epoch_path, "wb") as f:
+                f.write(b"%d" % (epoch + 1))
     # Prediction for test data.
     y_pred_test = y_pred.eval(feed_dict={X: X_test,
                                          y: y_test.reshape((-1, 1))})
-    save_path = saver.save(sess, "/tmp/logistic_model_final.ckpt")
+    save_path = saver.save(sess, final_model_path)
+    os.remove(checkpoint_epoch_path)
 
 file_writer.close()
-
 # Predict 1 if predicted probability is greater than 0.5.
 y_pred_test = (y_pred_test >= 0.5)
 p_score = precision_score(y_test, y_pred_test)
