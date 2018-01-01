@@ -26,16 +26,18 @@ b = tf.Variable(tf.zeros([1]), name='b')
 
 # Function for logistic regression.
 # y_pred = tf.div(1., 1. + tf.exp(-tf.matmul(X, W)+b))
-logits = tf.matmul(X, W) + b
-y_pred = tf.sigmoid(logits)
+with tf.name_scope("logistic_function"):
+    logits = tf.matmul(X, W) + b
+    y_pred = tf.sigmoid(logits)
 
+learning_rate = 0.01
 # loss = tf.reduce_mean(-(tf.multiply(y, tf.log(y_pred)) +
 #                         tf.multiply(1-y, tf.log(1-y_pred))))
 # Loss function for logistic regression.
 # log_loss function is equivalent to the above line.
-loss = tf.losses.log_loss(y, y_pred)
-learning_rate = 0.01
-optimizer = tf.train.GradientDescentOptimizer(learning_rate).minimize(loss)
+with tf.name_scope("losses"):
+    loss = tf.losses.log_loss(y, y_pred)
+    optimizer = tf.train.GradientDescentOptimizer(learning_rate).minimize(loss)
 
 n_epoch = 50
 batch_size = 100
@@ -52,7 +54,7 @@ with tf.Session() as sess:
             _, l = sess.run([optimizer, loss],
                             feed_dict={X: X_batch, y: y_batch})
             if batch == n_batch-1:
-                print("Epoch ", epoch, "Loss: ", l)
+                print("Loss: ", l)
                 save_path = saver.save(sess, "/tmp/logistic_model.ckpt")
     best_W = W.eval()
     best_b = b.eval()
