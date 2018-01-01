@@ -7,7 +7,7 @@ from sklearn.metrics import precision_score, recall_score
 
 
 def random_batch(X_train, y_train, batch_size):
-    ''' Return random batch of data with size of batch_size.
+    ''' Return random batch of data with batch_size.
     '''
     random_idx = np.random.randint(0, len(X_train), size=batch_size)
     X_batch = X_train[random_idx]
@@ -15,47 +15,50 @@ def random_batch(X_train, y_train, batch_size):
     return X_batch, y_batch
 
 
-data = datasets.make_moons(n_samples=10000, noise=0.4)
+n_samples = 10000
+data = datasets.make_moons(n_samples=n_samples, noise=0.4)
 X_train, X_test, y_train, y_test = \
         train_test_split(data[0], data[1], train_size=0.8, random_state=28)
 
-X = tf.placeholder(tf.float32, shape=(None, 2))
-y = tf.placeholder(tf.int32, shape=(None, 1))
+with tf.name_scope("model"):
+    X = tf.placeholder(tf.float32, shape=(None, 2))
+    y = tf.placeholder(tf.int32, shape=(None, 1))
 
-W = tf.Variable(tf.random_normal([2, 1]), name='W')
-b = tf.Variable(tf.zeros([1]), name='b')
+    W = tf.Variable(tf.random_normal([2, 1]), name='W')
+    b = tf.Variable(tf.zeros([1]), name='b')
+    # Function for logistic regression.
+    # y_pred = tf.div(1., 1. + tf.exp(-tf.matmul(X, W)+b))
+    logits = tf.matmul(X, W) + b
+    y_pred = tf.sigmoid(logits)
 
 # Create a log directory that TensorBoard will read from.
 now = datetime.utcnow().strftime("%Y%m%d%H%M%S")
 root_logdir = "tf_logs"
 logdir = "{}/run-{}/".format(root_logdir, now)
 
-# Function for logistic regression.
-# y_pred = tf.div(1., 1. + tf.exp(-tf.matmul(X, W)+b))
-with tf.name_scope("logistic_function"):
-    logits = tf.matmul(X, W) + b
-    y_pred = tf.sigmoid(logits)
-
 learning_rate = 0.01
 # loss = tf.reduce_mean(-(tf.multiply(y, tf.log(y_pred)) +
 #                         tf.multiply(1-y, tf.log(1-y_pred))))
 # Loss function for logistic regression.
 # log_loss function is equivalent to the above line.
-with tf.name_scope("losses"):
+with tf.name_scope("train"):
     loss = tf.losses.log_loss(y, y_pred)
     optimizer = tf.train.GradientDescentOptimizer(learning_rate).minimize(loss)
-
-# Create a node in the graph that will evaluate loss.
-loss_summary = tf.summary.scalar('LOSS', loss)
-# Write summaries to logfiles in the log directory.
-file_writer = tf.summary.FileWriter(logdir, tf.get_default_graph())
+    # Create a node in the graph that will evaluate loss.
+    loss_summary = tf.summary.scalar('LOSS', loss)
+    # Write summaries to logfiles in the log directory.
+    file_writer = tf.summary.FileWriter(logdir, tf.get_default_graph())
 
 n_epoch = 60
-batch_size = 100
-n_batch = 80
-init = tf.global_variables_initializer()
-# Create a Saver node.
-saver = tf.train.Saver()
+batch_size = 50
+n_batch = int(np.ceil(n_samples / batch_size))
+
+with tf.name_scope("init"):
+    init = tf.global_variables_initializer()
+
+with tf.name_scope("save"):
+    # Create a Saver node.
+    saver = tf.train.Saver()
 
 with tf.Session() as sess:
     sess.run(init)
@@ -63,18 +66,15 @@ with tf.Session() as sess:
     for epoch in range(n_epoch):
         for batch in range(n_batch):
             X_batch, y_batch = random_batch(X_train, y_train, batch_size)
-            _, l = sess.run([optimizer, loss],
-                            feed_dict={X: X_batch, y: y_batch})
+            _, loss_eval, summary_str = sess.run(
+                                            [optimizer, loss, loss_summary],
+                                            feed_dict={X: X_batch, y: y_batch})
             if batch == n_batch-1:
-                print("Loss: ", l)
+                print("Epoch ", epoch, "\tLoss: ", loss_eval)
                 # Save the model.
                 save_path = saver.save(sess, "/tmp/logistic_model.ckpt")
-                # Evaluate loss_summary node regularly 
-                summary_str = loss_summary.eval(feed_dict={X: X_batch, y: y_batch})
                 file_writer.add_summary(summary_str, epoch)
 
-    best_W = W.eval()
-    best_b = b.eval()
     # Prediction for test data.
     y_pred_test = y_pred.eval(feed_dict={X: X_test,
                                          y: y_test.reshape((-1, 1))})
