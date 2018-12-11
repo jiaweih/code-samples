@@ -1,0 +1,9 @@
+#!/bin/bash
+infile="day1_ranking.json"
+
+for day in `seq 1 31`; do
+  if [ ${#day} -eq 1 ]; then
+    day="0${day}"
+  fi
+  cat ${infile} | grep 201809${day} > 201809${day}
+done
