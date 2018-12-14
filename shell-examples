@@ -7,3 +7,10 @@ for day in `seq 1 31`; do
   fi
   cat ${infile} | grep 201809${day} > 201809${day}
 done
+
+
+declare -a arr=("pm25" "pm10" "so2" "o3" "no2" "co")
+for air_pollutant in "${arr[@]}"
+do
+	python model.py ${air_pollutant} ile} &
+done
