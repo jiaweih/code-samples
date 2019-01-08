@@ -14,3 +14,14 @@ for air_pollutant in "${arr[@]}"
 do
 	python model.py ${air_pollutant} ile} &
 done
+
+
+# Loop over decimal range.
+for cutoff_congestion in $(seq 0.5 0.1 1.5); do
+	for day in `seq 1 31`; do
+		if [ ${#day} -eq 1 ]; then
+			day="0${day}"
+		fi
+		cat 201809_huantai | python local_grid_hourly_traffic.py cutoff_congestion > data/201809${day}_${cutoff_congestion}
+	done
+done
