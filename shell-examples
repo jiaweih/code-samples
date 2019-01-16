@@ -32,3 +32,9 @@ hadoopnj01 fs -test -e /user/rp-rd/hejiawei/smart-ep/environment_traffic/huantai
 if [ $? -eq 0 ]; then
 	hadoopnj01 fs -rm /user/rp-rd/hejiawei/smart-ep/environment_traffic/huantai/${_today}
 fi
+
+# Delete ES data based on date format like "20190101".
+curl -XPOST 'http://nj02-bda-expv-advsvr05-00.nj02.baidu.com:8083/environment_traffic/data/_delete_by_query?pretty' 
+-d '{"query": {"bool": {"must": [{"match": {"city": "city_a"}},{"match": {"district": "district_a"}},
+		 		 {"range": {"time": {"lte": "'${_tomorrow}'", "gte": "'${_today}'"}}}]}}}'
+
