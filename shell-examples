@@ -25,3 +25,10 @@ for cutoff_congestion in $(seq 0.5 0.1 1.5); do
 		cat 201809_huantai | python local_grid_hourly_traffic.py cutoff_congestion > data/201809${day}_${cutoff_congestion}
 	done
 done
+
+# Test if a file exists on hadoop.
+# If exists, $? equals 0.
+hadoopnj01 fs -test -e /user/rp-rd/hejiawei/smart-ep/environment_traffic/huantai/${_today}
+if [ $? -eq 0 ]; then
+	hadoopnj01 fs -rm /user/rp-rd/hejiawei/smart-ep/environment_traffic/huantai/${_today}
+fi
