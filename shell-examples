@@ -38,3 +38,10 @@ curl -XPOST 'http://nj02-bda-expv-advsvr05-00.nj02.baidu.com:8083/environment_tr
 -d '{"query": {"bool": {"must": [{"match": {"city": "city_a"}},{"match": {"district": "district_a"}},
 		 		 {"range": {"time": {"lte": "'${_tomorrow}'", "gte": "'${_today}'"}}}]}}}'
 
+!! - replaced with the last command
+
+!$ - replaced with the last argument of the last command
+
+!^ - replaced with the first argument of the last command
+
+!:# - replaced with the # argument of the last command (0 for the command itself), can be in range eg. *1-3* for first 3 arguments 
